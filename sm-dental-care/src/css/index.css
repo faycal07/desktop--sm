@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.welcome-container {
+  background-image: url('../images/welcome.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh; /* Ensure the background image covers the full height */
+}
+
+  
