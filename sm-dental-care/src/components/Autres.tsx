@@ -83,12 +83,21 @@ const Autres: React.FC = () => {
     }, {} as Record<string, { date: string; totalPaid: number }>)
   );
 
-  // Data for PieChart (total paid amounts)
   const totalPaid = payments.reduce((sum, p) => sum + p.paid, 0);
-  const paymentPieData = [
-    { name: "Total Paiements", value: totalPaid },
-    { name: "Reste à Payer", value: totalPaid * 0.3 }, // Simulated pending amount
-  ];
+  const totalTreatmentCost = treatments.reduce((sum, t) => sum + t.price, 0); 
+const remainingBalance = totalTreatmentCost - totalPaid; // ✅ Correct calculation
+
+const paymentPieData = [
+  { name: "Total Paiements", value: totalPaid },
+  { name: "Reste à Payer", value: remainingBalance > 0 ? remainingBalance : 0 }, // Avoid negative values
+];
+
+  // // Data for PieChart (total paid amounts)
+  // const totalPaid = payments.reduce((sum, p) => sum + p.paid, 0);
+  // const paymentPieData = [
+  //   { name: "Total Paiements", value: totalPaid },
+  //   { name: "Reste à Payer", value: totalPaid * 0.3 }, // Simulated pending amount
+  // ];
   const COLORS = ["#0088FE", "#FFBB28"];
 
   const getPaymentStatistics = () => {
