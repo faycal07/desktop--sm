@@ -5,6 +5,7 @@ import PatientTreatments from "./PatientTreatments";
 import ConfirmationModal from "./ConfirmationModal";
 import { FaPlus, FaEdit, FaTrash, FaMedkit } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { exportPatientsToWord } from "../utils/exportToWord";
 
 
 const Patients: React.FC = () => {
@@ -20,28 +21,61 @@ const Patients: React.FC = () => {
     payload: Patient | null;
   }>({ type: null, payload: null });
 
+
   const fetchPatients = useCallback(async () => {
     if (selectedPatientForTreatments) return;
-    
+  
     try {
       const response = await window.electronAPI.getAllPatients();
       if (response.success && Array.isArray(response.patients)) {
-        const patientsWithDefaults = response.patients.map((patient: any) => ({
-          ...patient,
-          date: patient.date || new Date().toISOString(),
-          treatments: patient.treatments || [],
-        }));
-        setPatients(patientsWithDefaults);
-        setFilteredPatients(patientsWithDefaults);
+        const patientsWithTreatments = await Promise.all(
+          response.patients.map(async (patient: any) => {
+            const treatmentsResponse = await window.electronAPI.getPatientTreatments(patient.id);
+            if (treatmentsResponse.success) {
+              patient.treatments = await Promise.all(
+                treatmentsResponse.treatments.map(async (treatment: any) => {
+                  const paymentsResponse = await window.electronAPI.getTreatmentPayments(treatment.id);
+                  treatment.paymentHistory = paymentsResponse.success ? paymentsResponse.payments : [];
+                  return treatment;
+                })
+              );
+            }
+            return patient;
+          })
+        );
+  
+        setPatients(patientsWithTreatments);
+        setFilteredPatients(patientsWithTreatments);
       }
-      // toast.success("Patients loaded successfully");
-
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error("Error fetching patients:", error);
       toast.error("Failed to fetch patients");
-
     }
   }, [selectedPatientForTreatments]);
+  
+
+  // const fetchPatients = useCallback(async () => {
+  //   if (selectedPatientForTreatments) return;
+    
+  //   try {
+  //     const response = await window.electronAPI.getAllPatients();
+  //     if (response.success && Array.isArray(response.patients)) {
+  //       const patientsWithDefaults = response.patients.map((patient: any) => ({
+  //         ...patient,
+  //         date: patient.date || new Date().toISOString(),
+  //         treatments: patient.treatments || [],
+  //       }));
+  //       setPatients(patientsWithDefaults);
+  //       setFilteredPatients(patientsWithDefaults);
+  //     }
+  //     // toast.success("Patients loaded successfully");
+
+  //   } catch (error) {
+  //     console.error('Error fetching patients:', error);
+  //     toast.error("Failed to fetch patients");
+
+  //   }
+  // }, [selectedPatientForTreatments]);
 
   useEffect(() => {
     fetchPatients();
@@ -294,7 +328,8 @@ const Patients: React.FC = () => {
             
                   <td className="px-5 py-3 text-sm text-gray-700">{patient.name}</td>
                   <td className="px-5 py-3 text-sm text-gray-700">{patient.last_name}</td>
-                  <td className="px-5 py-3 text-sm text-gray-700">{patient.age}</td>
+                  {/* <td className="px-5 py-3 text-sm text-gray-700">{patient.age}</td> */}
+                  <td className="px-5 py-3 text-sm text-gray-700">{patient.age ?? "N/A"}  {/* Display "N/A" if age is undefined */}</td>
                   <td className="px-5 py-3 text-sm text-gray-700">{patient.date}</td>
                   <td className="px-5 py-3 text-sm text-gray-700">{patient.case_description}</td>
                   <td className="px-5 py-3 text-sm">
@@ -331,6 +366,20 @@ const Patients: React.FC = () => {
           </table>
           
         </div>
+        <button
+  onClick={() => exportPatientsToWord()}  // No arguments here
+  className="bg-cyan-700 text-white px-4 py-2 rounded hover:bg-green-600 my-4"
+>
+  Download Register History
+</button>
+
+        {/* <button
+  onClick={() => exportPatientsToWord(patients)}
+  className="bg-cyan-700 text-white px-4 py-2 rounded hover:bg-green-600 my-4"
+>
+  Download Register History
+</button> */}
+
         {/* Patient Statistics Section */}
 <div className="mt-6 bg-white p-4 shadow rounded-lg text-gray-700 bottom-0">
   <h3 className="text-lg font-semibold mb-2">Patient Statistics</h3>
