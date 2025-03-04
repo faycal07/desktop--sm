@@ -139,58 +139,58 @@ const PaymentHistoryPage: React.FC<PaymentHistoryPageProps> = ({
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-[#0C1B33] w-full">
       <Sidebar />
       <div className="p-6 w-full my-3">
         <div className="flex items-center mb-6">
           <button
             onClick={onBack}
-            className="flex items-center text-blue-600 hover:text-blue-800"
+            className="flex items-center text-[#f2e7c0] hover:text-[#baaf87]"
           >
             <FaArrowLeft className="mr-2" /> Back to Treatments
           </button>
         </div>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Payment History for <span className="font-semibold">{treatment.name}</span></h2>
+          <h2 className="text-2xl font-bold text-[#03B5AA]">Payment History for <span className="font-semibold">{treatment.name}</span></h2>
         </div>
         <button
           onClick={() => {
             setSelectedPayment(null);
             setShowPaymentForm(true);
           }}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
+          className="bg-[#d7ca9b] text-[#0C1B33] hover:bg-[#B2AA8E] font-bold py-2 px-4 rounded flex items-center gap-2"
         >
           <FaPlus /> Add Payment
         </button>
 
-        <div className="bg-white rounded-lg shadow-md p-6 mt-4">
+        <div className="bg-[#f1e6b9] rounded-lg shadow-md p-6 mt-4">
           <div className="mb-6">
             <p className="text-lg">
-              Total Price: <span className="font-semibold text-green-600">${treatment.price}</span>
+              Total Price: <span className="font-semibold text-green-600">{treatment.price} DZD</span>
             </p>
             <p className="text-lg">
-              Total Paid: <span className="font-semibold text-blue-600">${totalPaid}</span>
+              Total Paid: <span className="font-semibold text-blue-600">{totalPaid} DZD</span>
             </p>
             <p className="text-lg">
-              Remaining Amount: <span className="font-semibold text-red-600">${remainingAmount}</span>
+              Remaining Amount: <span className="font-semibold text-red-600">{remainingAmount} DZD</span>
             </p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full table-auto w-full">
               <thead>
-                <tr className="bg-gray-100">
+                <tr className="bg-[#e0d6b0]">
                   <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Amount</th>
+                  <th className="px-4 py-2 text-left">Amount (DZD)</th>
                   <th className="px-4 py-2 text-left">Act</th>
                   <th className="px-4 py-2 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className='divide-y divide-gray-400'>
                 {payments.map((payment: Payment) => (
-                  <tr key={payment.id} className="border-b hover:bg-gray-50">
+                  <tr key={payment.id} className="hover:bg-[#d7ca9b]">
                     <td className="px-4 py-2">{new Date(payment.date).toLocaleDateString()}</td>
-                    <td className="px-4 py-2 text-green-600 font-medium">${payment.paid}</td>
+                    <td className="px-4 py-2 text-green-600 font-medium">{payment.paid} </td>
                     <td className="px-4 py-2">{payment.act}</td>
                     <td className="px-4 py-2 text-right">
                       <button

@@ -263,20 +263,20 @@ const PatientTreatments: React.FC<PatientTreatmentsProps> = ({
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-[#0C1B33] w-full">
       <Sidebar />
     <div className="p-6 w-full my-3">
       <div className="flex items-center mb-6">
         <button
           onClick={onBack}
-          className="flex items-center text-blue-600 hover:text-blue-800"
+          className="flex items-center text-[#f2e7c0] hover:text-[#baaf87]"
         >
           <FaArrowLeft className="mr-2" /> Back to Patients
         </button>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">
-        Treatments for {patient.name} {patient.last_name}
+      <h2 className="text-2xl font-bold mb-4 text-[#03B5AA]">
+        Treatments for :<span className="font-semibold">"{patient.name} {patient.last_name}"</span> 
       </h2>
 
       <button
@@ -284,25 +284,28 @@ const PatientTreatments: React.FC<PatientTreatmentsProps> = ({
           setSelectedTreatment(null);
           setShowTreatmentForm(true);
         }}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+        className="bg-[#d7ca9b] text-[#0C1B33] px-4 py-2 rounded hover:bg-[#B2AA8E] font-bold mb-4"
       >
         <FaPlus className="inline-block mr-2" /> Add Treatment
       </button>
-     <div className="mt-8 overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg w-full">
-  <table className="w-full min-w-full divide-y divide-gray-300">
-    <thead className="bg-gray-50">
+     {/* <div className="mt-8 overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg w-full">
+  <table className="w-full min-w-full divide-y divide-gray-300"> */}
+  <div className="mt-8 overflow-x-auto shadow ring-1 ring-black ring-opacity-5 rounded-lg w-full">
+  <table className="w-full min-w-max divide-y divide-gray-300">
+
+    <thead className="bg-[#e0d6b0]">
       <tr>
         <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">Treatment</th>
         <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Description</th>
         <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Date</th>
-        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price</th>
+        <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Price (DZD)</th>
         <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status</th>
         <th className="relative py-3.5 pl-3 pr-4">
           <span className="sr-only">Actions</span>
         </th>
       </tr>
     </thead>
-    <tbody className="divide-y divide-gray-200 bg-white">
+    <tbody className="divide-y divide-gray-400 bg-[#f7eecb]">
       {treatments.map((treatment) => {
         const totalPaid = treatment.paymentHistory?.reduce((sum, payment) => sum + payment.paid, 0) || 0;
         const remaining = treatment.price - totalPaid;
@@ -310,7 +313,7 @@ const PatientTreatments: React.FC<PatientTreatmentsProps> = ({
         return (
           <tr
           key={treatment.id}
-          className="hover:bg-gray-50 cursor-pointer"
+          className="hover:bg-[#cdc191] cursor-pointer"
           onDoubleClick={() => handleAddPayment(treatment)}
         >
         
@@ -318,11 +321,11 @@ const PatientTreatments: React.FC<PatientTreatmentsProps> = ({
             <td className="px-3 py-4 text-sm text-gray-500">{treatment.description}</td>
             <td className="px-3 py-4 text-sm text-gray-500">{new Date(treatment.date).toLocaleDateString()}</td>
             <td className="px-3 py-4 text-sm">
-              <div className="font-medium text-gray-900">${treatment.price}</div>
+              <div className="font-medium text-gray-900">{treatment.price}</div>
               {totalPaid > 0 && (
                 <>
-                  <div className="text-green-600">Paid: ${totalPaid}</div>
-                  <div className="text-red-600">Remaining: ${remaining}</div>
+                  <div className="text-green-600">Paid: {totalPaid}</div>
+                  <div className="text-red-600">Remaining: {remaining}</div>
                 </>
               )}
             </td>

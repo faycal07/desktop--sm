@@ -63,7 +63,7 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="flex bg-[#f5f5dc] min-h-screen">
+    <div className="flex bg-[#0C1B33] min-h-screen">
       {/* Sidebar */}
    
         <Sidebar />
@@ -71,14 +71,14 @@ const DashboardPage = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-6">
-        <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mx-auto">
-          <h1 className="text-4xl font-extrabold text-center text-[#6a994e] mb-6">
+        <div className="bg-[#B2AA8E] p-8 rounded-lg shadow-lg w-full max-w-lg mx-auto">
+          <h1 className="text-4xl font-extrabold text-center text-[#0C1B33] mb-6">
             Welcome, {name || 'Guest'}
           </h1>
           <div className="text-center">
             <button
               onClick={handleLogout}
-              className="py-3 px-6 bg-[#6a994e] text-white font-semibold rounded-lg hover:bg-[#4c7b37] transition-all duration-200"
+              className="py-3 px-6 bg-[#8e7c3c] text-white font-semibold rounded-lg hover:bg-[#bca75b] transition-all duration-200"
             >
               Logout
             </button>

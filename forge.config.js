@@ -10,6 +10,7 @@ module.exports = {
     extraResource: [path.resolve(__dirname, "./env.json")],
     icon: path.resolve(__dirname, "smicon"),
     executableName: "SM-DentalCare", 
+    productName: "SM Dental Care",  // ✅ Proper Display Name
     // other options
 },
 hooks: {
@@ -40,12 +41,13 @@ hooks: {
         config: {
           authors: "Fayçal Mebarki",
           description: "SM Dental Care",
+     
           exe: "SM-DentalCare.exe",
           setupExe: "SM-DentalCare-Installer.exe",
           noMsi: true,
           setupIcon: path.resolve(__dirname, "smicon.ico"), // ✅ Ensure icon path is correct
           iconUrl: path.resolve(__dirname, "smicon.ico"),
-          loadingGif: path.resolve(__dirname, "smicon.ico"), // Optional
+          loadingGif: path.resolve(__dirname, "inst.gif"), // Optional
         },
       
       

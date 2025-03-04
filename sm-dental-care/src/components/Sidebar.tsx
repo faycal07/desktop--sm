@@ -10,7 +10,8 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-[#6a994e] text-white h-screen sticky top-0 left-0 p-6 flex flex-col">
+    <div className="bg-[#B2AA8E] text-slate-800 h-screen sticky top-0 left-0 p-6 flex flex-col">
+      <img src="/smicon.ico" alt="logo" />
       <h2 className="text-2xl font-extrabold text-center mb-4">Dashboard</h2>
 
       {/* Menu Principal */}
@@ -18,7 +19,7 @@ const Sidebar = () => {
         <li>
           <Link
             to="/dashboard"
-            className="block py-2 px-4 rounded-lg text-center hover:bg-[#4c7b37] transition-all duration-200"
+            className="block py-2 px-4 rounded-lg text-center font-semibold hover:bg-[#9b8c54] transition-all duration-200"
           >
             Home
           </Link>
@@ -26,7 +27,7 @@ const Sidebar = () => {
         <li>
           <Link
             to="/patients"
-            className="block py-2 px-4 rounded-lg text-center hover:bg-[#4c7b37] transition-all duration-200"
+            className="block py-2 px-4 rounded-lg text-center font-semibold hover:bg-[#9b8c54] transition-all duration-200"
           >
             Patients
           </Link>
@@ -34,7 +35,7 @@ const Sidebar = () => {
         <li>
           <Link
             to="/autres"
-            className="block py-2 px-4 rounded-lg text-center hover:bg-[#4c7b37] transition-all duration-200"
+            className="block py-2 px-4 rounded-lg text-center font-semibold hover:bg-[#9b8c54] transition-all duration-200"
           >
             Autres
           </Link>
@@ -42,7 +43,7 @@ const Sidebar = () => {
         <li>
           <Link
             to="/profile"
-            className="block py-2 px-4 rounded-lg text-center hover:bg-[#4c7b37] transition-all duration-200"
+            className="block py-2 px-4 rounded-lg text-center font-semibold hover:bg-[#9b8c54] transition-all duration-200"
           >
             Profile
           </Link>
@@ -52,7 +53,7 @@ const Sidebar = () => {
       {/* Bouton Déconnexion */}
       <button
         onClick={handleLogout}
-        className="py-3 px-6 bg-[#37601e] text-white font-semibold rounded-lg hover:bg-[#4c7b37] transition-all duration-200 w-full"
+        className="py-3 px-6 bg-[#8e7c3c] text-white font-semibold rounded-lg hover:bg-[#bca75b] transition-all duration-200 w-full"
       >
         Logout
       </button>

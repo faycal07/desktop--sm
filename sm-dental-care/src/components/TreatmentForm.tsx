@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -31,7 +32,7 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
   });
 
   const [error, setError] = useState<string>('');
-  const [confirmUpdate, setConfirmUpdate] = useState<boolean>(false); // State for confirmation modal
+  const [confirmUpdate, setConfirmUpdate] = useState<boolean>(false);
 
   useEffect(() => {
     if (treatment) {
@@ -74,16 +75,12 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError('');
-  
-    if (!validateForm()) {
-      return;
-    }
-  
+
+    if (!validateForm()) return;
+
     if (treatment) {
-      // If editing an existing treatment, show the confirmation modal
       setConfirmUpdate(true);
     } else {
-      // If adding a new treatment, submit directly
       try {
         await onSubmit(formData);
       } catch (error) {
@@ -92,12 +89,11 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
       }
     }
   };
-  
 
   const handleConfirmSubmit = async (): Promise<void> => {
     try {
-      await onSubmit(formData); // Submit the form after confirmation
-      setConfirmUpdate(false); // Close the modal
+      await onSubmit(formData);
+      setConfirmUpdate(false);
     } catch (error) {
       setError(error instanceof Error ? error.message : 'An error occurred');
       console.error('Error submitting treatment:', error);
@@ -106,7 +102,7 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+      <div className="bg-amber-100 rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">
           {treatment ? 'Edit Treatment' : 'Add Treatment'}
         </h2>
@@ -117,7 +113,7 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
               Treatment Name
@@ -128,9 +124,10 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
               type="text"
               value={formData.name}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                       focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-1 rounded-md border-[2px] border-[#002147] shadow-sm 
+              focus:border-[#001633] focus:ring-[#001633]" 
               required
+              placeholder="Enter Treatment Name"
             />
           </div>
 
@@ -143,9 +140,10 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                       focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-1 rounded-md border-[2px] border-[#002147] shadow-sm 
+              focus:border-[#001633] focus:ring-[#001633]" 
               rows={3}
+              placeholder="Enter Treatment Description"
             />
           </div>
 
@@ -159,8 +157,8 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
               type="date"
               value={formData.date}
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                       focus:border-blue-500 focus:ring-blue-500"
+              className="mt-1 block w-full px-4 py-1 rounded-md border-[2px] border-[#002147] shadow-sm 
+              focus:border-[#001633] focus:ring-[#001633]" 
               required
             />
           </div>
@@ -173,13 +171,13 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
               id="price"
               name="price"
               type="number"
-              value={formData.price}
+              value={formData.price || ''} 
               onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                       focus:border-blue-500 focus:ring-blue-500"
-              required
+              className="mt-1 block w-full px-4 py-1 rounded-md border-[2px] border-[#002147] shadow-sm 
+              focus:border-[#001633] focus:ring-[#001633]"  
               min="0"
               step="0.01"
+              placeholder="Enter Treatment Price"
             />
           </div>
 
@@ -194,8 +192,8 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md 
-                       hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  className="px-4 py-2 bg-[#062951] text-white rounded-md 
+                       hover:bg-[#001633] focus:outline-none focus:ring-2 focus:ring-[#001633]"
             >
               {treatment ? 'Update' : 'Add'}
             </button>
@@ -205,10 +203,10 @@ const TreatmentForm: React.FC<TreatmentFormProps> = ({
 
       {confirmUpdate && (
         <ConfirmationModal
-          message={`Are you sure you want to ${treatment ? 'UPDATE' : 'DELETE'} this treatment?`}
-          onConfirm={handleConfirmSubmit} // Confirm and submit
-          onCancel={() => setConfirmUpdate(false)} // Cancel confirmation
-          actionType={treatment ? 'update' : 'delete'}
+          message={`Are you sure you want to update this treatment?`}
+          onConfirm={handleConfirmSubmit}
+          onCancel={() => setConfirmUpdate(false)}
+          actionType="update"
         />
       )}
     </div>

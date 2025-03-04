@@ -2,9 +2,36 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // User Authentication
-  login: (data) => ipcRenderer.invoke('authenticate-user', data),
-  register: (data) => ipcRenderer.invoke('register-user', data),
-  verifyToken: (token) => ipcRenderer.invoke('verify-token', token),
+  // login: (data) => ipcRenderer.invoke('authenticate-user', data),
+  // register: (data) => ipcRenderer.invoke('register-user', data),
+  // verifyToken: (token) => ipcRenderer.invoke('verify-token', token),
+  // User Authentication
+  login: async (data) => {
+    try {
+      return await ipcRenderer.invoke("authenticate-user", data);
+    } catch (error) {
+      console.error("IPC Login Error:", error);
+      return { success: false, message: "Login failed due to internal error" };
+    }
+  },
+
+  register: async (data) => {
+    try {
+      return await ipcRenderer.invoke("register-user", data);
+    } catch (error) {
+      console.error("IPC Registration Error:", error);
+      return { success: false, message: "Registration failed due to internal error" };
+    }
+  },
+
+  verifyToken: async (token) => {
+    try {
+      return await ipcRenderer.invoke("verify-token", token);
+    } catch (error) {
+      console.error("IPC Token Verification Error:", error);
+      return { success: false, message: "Token verification failed" };
+    }
+  },
   getUserInfo: (token) => ipcRenderer.invoke('getUserInfo', token),
 
 
@@ -43,3 +70,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
   addPayment: (paymentData) => ipcRenderer.invoke('add-payment', paymentData),
   getTreatmentPayments: (treatmentId) => ipcRenderer.invoke('get-treatment-payments', treatmentId),
 });
+

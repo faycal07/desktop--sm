@@ -13,6 +13,7 @@ const Patients: React.FC = () => {
   const [filteredPatients, setFilteredPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState<string>("all");
+  const [showAllPatients, setShowAllPatients] = useState(false); // State to toggle between all patients and today's patients
   const [showForm, setShowForm] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [selectedPatientForTreatments, setSelectedPatientForTreatments] = useState<Patient | null>(null);
@@ -54,37 +55,44 @@ const Patients: React.FC = () => {
   }, [selectedPatientForTreatments]);
   
 
-  // const fetchPatients = useCallback(async () => {
-  //   if (selectedPatientForTreatments) return;
-    
-  //   try {
-  //     const response = await window.electronAPI.getAllPatients();
-  //     if (response.success && Array.isArray(response.patients)) {
-  //       const patientsWithDefaults = response.patients.map((patient: any) => ({
-  //         ...patient,
-  //         date: patient.date || new Date().toISOString(),
-  //         treatments: patient.treatments || [],
-  //       }));
-  //       setPatients(patientsWithDefaults);
-  //       setFilteredPatients(patientsWithDefaults);
-  //     }
-  //     // toast.success("Patients loaded successfully");
+   // Get today's date in YYYY-MM-DD format
+   const today = new Date().toISOString().split("T")[0];
 
-  //   } catch (error) {
-  //     console.error('Error fetching patients:', error);
-  //     toast.error("Failed to fetch patients");
-
-  //   }
-  // }, [selectedPatientForTreatments]);
+   // Filter patients who were added today OR have treatments/payments today
+   const filteredPatientsList = patients.filter((p) => 
+     p.date.startsWith(today) ||
+     p.treatments?.some((t) => t.date.startsWith(today)) ||
+     p.treatments?.some((t) => t.paymentHistory?.some((pay) => pay.date.startsWith(today)))
+   );
 
   useEffect(() => {
     fetchPatients();
   }, [fetchPatients]);
 
+  // useEffect(() => {
+  //   const lowercasedSearchTerm = searchTerm.toLowerCase();
+  //   setFilteredPatients(
+  //     patients.filter((patient) => {
+  //       if (searchField === "all") {
+  //         return Object.values(patient).some((value) =>
+  //           String(value).toLowerCase().includes(lowercasedSearchTerm)
+  //         );
+  //       }
+  //       return String(patient[searchField as keyof Patient])
+  //         .toLowerCase()
+  //         .includes(lowercasedSearchTerm);
+  //     })
+  //   );
+  // }, [patients, searchTerm, searchField]);
+
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
+  
+    // Determine which patient list to apply the search on
+    const patientsToSearch = showAllPatients ? patients : filteredPatientsList;
+  
     setFilteredPatients(
-      patients.filter((patient) => {
+      patientsToSearch.filter((patient) => {
         if (searchField === "all") {
           return Object.values(patient).some((value) =>
             String(value).toLowerCase().includes(lowercasedSearchTerm)
@@ -95,8 +103,10 @@ const Patients: React.FC = () => {
           .includes(lowercasedSearchTerm);
       })
     );
-  }, [patients, searchTerm, searchField]);
+  }, [patients, searchTerm, searchField, showAllPatients, filteredPatientsList]);
+  
 
+   
 
   const getPatientStatistics = () => {
     const today = new Date();
@@ -271,12 +281,14 @@ const Patients: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-beige">
+    <div className="flex flex-col md:flex-row min-h-screen bg-[#0C1B33]">
       <Sidebar />
-      <div className="flex-1 p-6 bg-beige">
-        <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4 mb-6">
+      <div className="flex-1 p-2 bg-[#0C1B33] ">
+  
+        <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-2 mt-4 mb-2">
+
           <button
-            className="flex items-center justify-center py-2 px-4 w-full sm:w-36 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center justify-center py-2 px-4 w-full sm:w-36 bg-[#9c916b] text-white text-sm font-semibold rounded-lg hover:bg-[#c2b583] transition-colors"
             onClick={() => {
               setEditingPatient(null);
               setShowForm(true);
@@ -284,6 +296,12 @@ const Patients: React.FC = () => {
           >
             <FaPlus className="mr-2" /> Add Patient
           </button>
+          <button
+  onClick={() => exportPatientsToWord()}  // No arguments here
+  className="bg-[#03B5AA] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#1a7771] "
+>
+  Download Register History
+</button>
           <select
             title="Filter"
             value={searchField}
@@ -304,25 +322,63 @@ const Patients: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+
+            {/* Toggle button to switch between all patients and today's patients */}
+        <button
+          onClick={() => setShowAllPatients(!showAllPatients)}
+          className="px-4 py-2 bg-emerald-800 text-white text-sm rounded-lg hover:bg-emerald-600"
+        >
+          {showAllPatients ? "Show Today's Patients" : "Show All Patients"}
+        </button>
         </div>
 
-        <div className="overflow-x-auto bg-white shadow rounded-lg">
+ {/* Patient Statistics Section */}
+ <div className=" bg-[#B2AA8E] p-4 shadow rounded-lg text-[#0C1B33] bottom-0 my-4">
+  <h3 className="text-lg font-semibold mb-2">Patient Statistics</h3>
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+    <div className="p-2 bg-gray-100 rounded-lg">
+      <span className="text-sm text-gray-500">Total Patients</span>
+      <h4 className="text-xl font-bold">{getPatientStatistics().total}</h4>
+    </div>
+    <div className="p-2 bg-green-100 rounded-lg">
+      <span className="text-sm text-gray-500">Today's New Patients</span>
+      <h4 className="text-xl font-bold">{getPatientStatistics().today}</h4>
+    </div>
+    <div className="p-2 bg-blue-100 rounded-lg">
+      <span className="text-sm text-gray-500">This Week</span>
+      <h4 className="text-xl font-bold">{getPatientStatistics().thisWeek}</h4>
+    </div>
+    <div className="p-2 bg-cyan-100 rounded-lg">
+      <span className="text-sm text-gray-500">This Month</span>
+      <h4 className="text-xl font-bold">{getPatientStatistics().thisMonth}</h4>
+    </div>
+    <div className="p-2 bg-purple-100 rounded-lg">
+      <span className="text-sm text-gray-500">This Year</span>
+      <h4 className="text-xl font-bold">{getPatientStatistics().thisYear}</h4>
+    </div>
+  </div>
+</div> 
+
+
+
+        <div className="overflow-x-auto bg-[#e0d6b0] shadow rounded-lg mx-2">
           <table className="min-w-full table-auto">
-            <thead className="bg-gray-100 border-b">
+            <thead className="bg-[#e0d6b0] border-b">
               <tr>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Name</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Last Name</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Age</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
-                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Case</th>
+                <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Case Description</th>
                 <th className="px-5 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filteredPatients.map((patient) => (
+            <tbody className="divide-y divide-gray-400">
+            {/* {(showAllPatients ? patients : filteredPatientsList).map((patient) => ( */}
+            {filteredPatients.map((patient) => (
               <tr
               key={patient.id}
-              className="bg-white border-b hover:bg-gray-50 cursor-pointer"
+              className="bg-[#f7eecb] hover:bg-[#cdc191] cursor-pointer"
               onDoubleClick={() => setSelectedPatientForTreatments(patient)}
             >
             
@@ -366,46 +422,9 @@ const Patients: React.FC = () => {
           </table>
           
         </div>
-        <button
-  onClick={() => exportPatientsToWord()}  // No arguments here
-  className="bg-cyan-700 text-white px-4 py-2 rounded hover:bg-green-600 my-4"
->
-  Download Register History
-</button>
+   
 
-        {/* <button
-  onClick={() => exportPatientsToWord(patients)}
-  className="bg-cyan-700 text-white px-4 py-2 rounded hover:bg-green-600 my-4"
->
-  Download Register History
-</button> */}
-
-        {/* Patient Statistics Section */}
-<div className="mt-6 bg-white p-4 shadow rounded-lg text-gray-700 bottom-0">
-  <h3 className="text-lg font-semibold mb-2">Patient Statistics</h3>
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-    <div className="p-3 bg-gray-100 rounded-lg">
-      <span className="text-sm text-gray-500">Total Patients</span>
-      <h4 className="text-xl font-bold">{getPatientStatistics().total}</h4>
-    </div>
-    <div className="p-3 bg-green-100 rounded-lg">
-      <span className="text-sm text-gray-500">Today's Patients</span>
-      <h4 className="text-xl font-bold">{getPatientStatistics().today}</h4>
-    </div>
-    <div className="p-3 bg-blue-100 rounded-lg">
-      <span className="text-sm text-gray-500">This Week</span>
-      <h4 className="text-xl font-bold">{getPatientStatistics().thisWeek}</h4>
-    </div>
-    <div className="p-3 bg-yellow-100 rounded-lg">
-      <span className="text-sm text-gray-500">This Month</span>
-      <h4 className="text-xl font-bold">{getPatientStatistics().thisMonth}</h4>
-    </div>
-    <div className="p-3 bg-purple-100 rounded-lg">
-      <span className="text-sm text-gray-500">This Year</span>
-      <h4 className="text-xl font-bold">{getPatientStatistics().thisYear}</h4>
-    </div>
-  </div>
-</div>
+     
 
       </div>
         

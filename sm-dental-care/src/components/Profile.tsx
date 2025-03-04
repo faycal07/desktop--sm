@@ -110,10 +110,10 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-[#0C1B33]">
       <Sidebar />
       <div className="flex-1 p-8">
-        <div className="max-w-lg mx-auto bg-white p-6 rounded-2xl shadow-xl">
+        <div className="max-w-lg mx-auto bg-[#B2AA8E] p-6 rounded-2xl shadow-xl">
           <h1 className="text-3xl font-semibold text-gray-800 mb-6">Profile</h1>
           {isEditing ? (
             <>

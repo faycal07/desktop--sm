@@ -64,7 +64,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    autoHideMenuBar: true, 
+    autoHideMenuBar: false, 
     icon: path.join(__dirname, 'smicon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -102,6 +102,9 @@ app.on('window-all-closed', () => {
 
 // IPC Handlers
 
+
+
+
 ipcMain.handle('register-user', async (event, userData) => {
   try {
     const result = await auth.registerUser(userData);
@@ -111,6 +114,8 @@ ipcMain.handle('register-user', async (event, userData) => {
     return { success: false, message: 'Registration failed due to server error' };
   }
 });
+
+
 
 ipcMain.handle('authenticate-user', async (event, credentials) => {
   try {
@@ -122,19 +127,31 @@ ipcMain.handle('authenticate-user', async (event, credentials) => {
   }
 });
 
-
-ipcMain.handle('verify-token', async (event, token) => {
+ipcMain.handle("verify-token", async (event, token) => {
   try {
     const decoded = jwt.verify(token, SECRET_KEY);
     return { success: true, username: decoded.username };
   } catch (error) {
-    console.error('Token verification failed:', error.message);
-    if (error.name === 'TokenExpiredError') {
-      return { success: false, message: 'Token expired' };
-    }
-    return { success: false, message: 'Invalid token' };
+    console.error("Token verification failed:", error.message);
+    return { 
+      success: false, 
+      message: error.name === "TokenExpiredError" ? "Token expired" : "Invalid token" 
+    };
   }
 });
+
+// ipcMain.handle('verify-token', async (event, token) => {
+//   try {
+//     const decoded = jwt.verify(token, SECRET_KEY);
+//     return { success: true, username: decoded.username };
+//   } catch (error) {
+//     console.error('Token verification failed:', error.message);
+//     if (error.name === 'TokenExpiredError') {
+//       return { success: false, message: 'Token expired' };
+//     }
+//     return { success: false, message: 'Invalid token' };
+//   }
+// });
 ipcMain.handle("get-user-profile", async (_, username) => {
   try {
     console.log("Fetching profile for username:", username);
